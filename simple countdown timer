@@ -1,0 +1,10 @@
+import time
+seconds = int(input("Enter the countdown time in seconds:"))
+for i in range(seconds):
+    if seconds - i == 1:
+        print(str(seconds - i) + " second remain")
+    else:
+        print(str(seconds - i) + " seconds remain")
+    time.sleep(1)
+
+print("Time Out!")
