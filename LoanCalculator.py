@@ -76,28 +76,25 @@ def calculate_loan():
     interest_monthly = interest/12
     numerator = interest_monthly*((1 + interest_monthly)**months)
     denominator = (1 + interest_monthly)**months - 1
-    payment = float("{0:.2f}".format(amount*numerator/denominator))
-    total_interest = float("{0:.2f}".format((interest / months) * amount))
-    total_cost = float("{0:.2f}".format(amount + total_interest))
+    payment = amount*numerator/denominator
+    total_cost = months * payment
+    total_interest = total_cost - amount
 
-    label_calc_loan_result_result = Label(result_frame, bg='white', text=round(payment, 2), font=('Courier', 20), anchor='n', justify='center')
+    label_calc_loan_result_result = Label(result_frame, bg='white', text="{0:.2f}".format(payment), font=('Courier', 20), anchor='n', justify='center')
     label_calc_loan_result_result.place(relx=0.3, rely=0.3, relwidth=0.4, relheight=0.15)
 
     label_total_principal_result = Label(result_frame, bg='white', text="{0:.2f}".format(amount), font=('Courier', 14), anchor='nw', justify='left')
     label_total_principal_result.place(relx=0.7, rely=0.6, relwidth=0.3, relheight=0.1)
 
-    label_total_interest_result = Label(result_frame, bg='white', text=round(total_interest, 2), font=('Courier', 14), anchor='nw', justify='left')
+    label_total_interest_result = Label(result_frame, bg='white', text="{0:.2f}".format(total_interest), font=('Courier', 14), anchor='nw', justify='left')
     label_total_interest_result.place(relx=0.7, rely=0.7, relwidth=0.3, relheight=0.1)
 
-    label_total_cost_result = Label(result_frame, bg='white', text=round(total_cost, 2), font=('Courier', 14), anchor='nw', justify='left')
+    label_total_cost_result = Label(result_frame, bg='white', text="{0:.2f}".format(total_cost), font=('Courier', 14), anchor='nw', justify='left')
     label_total_cost_result.place(relx=0.7, rely=0.8, relwidth=0.3, relheight=0.1)
 
 
 button_calc = Button(calculator_frame, text="Calculate", bd=2, font=('Courier', 14), command=lambda: calculate_loan())
 button_calc.place(relx=0.5, rely=0.80, relwidth=0.4, relheight=0.1)
-
-button_clear = Button(calculator_frame, text="Clear", bd=2, font=('Courier', 14), command=lambda: calculate_loan())
-button_clear.place(relx=0.05, rely=0.80, relwidth=0.4, relheight=0.1)
 
 root.mainloop()
 
