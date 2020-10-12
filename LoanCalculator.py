@@ -1,4 +1,8 @@
 from tkinter import *
+import pandas as pd
+from pandastable import Table
+import numpy_financial as npf
+from datetime import date
 
 HEIGHT = 600
 WIDTH = 900
@@ -28,19 +32,24 @@ calculator_frame_label = Label(calculator_frame, bg='white', font=('Courier', 12
 calculator_frame_label.place(relwidth=1, relheight=1)
 
 label1 = Label(calculator_frame, bg='white', text="Loan Amount", font=('Courier', 14), anchor='nw', justify='left')
-label1.place(relx=0.03, rely=0.15, relwidth=0.5, relheight=0.1)
+label1.place(relx=0.03, rely=0.08, relwidth=0.5, relheight=0.1)
 entry1 = Entry(calculator_frame, bg='white', bd=2, font=('Courier', 12))
-entry1.place(relx=0.55, rely=0.15, relwidth=0.4, relheight=0.1)
+entry1.place(relx=0.55, rely=0.08, relwidth=0.4, relheight=0.1)
 
 label2 = Label(calculator_frame, bg='white', text="Term (Months)", font=('Courier', 14), anchor='nw', justify='left')
-label2.place(relx=0.03, rely=0.35, relwidth=0.5, relheight=0.1)
+label2.place(relx=0.03, rely=0.28, relwidth=0.5, relheight=0.1)
 entry2 = Entry(calculator_frame, bg='white', bd=2, font=('Courier', 12))
-entry2.place(relx=0.55, rely=0.35, relwidth=0.4, relheight=0.1)
+entry2.place(relx=0.55, rely=0.28, relwidth=0.4, relheight=0.1)
 
 label3 = Label(calculator_frame, bg='white', text="Interest Rate %", font=('Courier', 14), anchor='nw', justify='left')
-label3.place(relx=0.03, rely=0.55, relwidth=0.5, relheight=0.1)
+label3.place(relx=0.03, rely=0.48, relwidth=0.5, relheight=0.1)
 entry3 = Entry(calculator_frame, bg='white', bd=2, font=('Courier', 12))
-entry3.place(relx=0.55, rely=0.55, relwidth=0.4, relheight=0.1)
+entry3.place(relx=0.55, rely=0.48, relwidth=0.4, relheight=0.1)
+
+label4 = Label(calculator_frame, bg='white', text="Start Date Y-M-D", font=('Courier', 14), anchor='nw', justify='left')
+label4.place(relx=0.03, rely=0.68, relwidth=0.5, relheight=0.1)
+entry4 = Entry(calculator_frame, bg='white', bd=2, font=('Courier', 12))
+entry4.place(relx=0.55, rely=0.68, relwidth=0.4, relheight=0.1)
 
 """Draw and display the result frame and labels inside the frame"""
 result_frame = Frame(root, bd=2, bg='red')
@@ -71,6 +80,7 @@ def calculate_loan():
     amount = float(entry1.get())
     months = float(entry2.get())
     interest = float(entry3.get())
+    start_date = (entry4.get())
 
     interest = interest/100
     interest_monthly = interest/12
@@ -92,9 +102,43 @@ def calculate_loan():
     label_total_cost_result = Label(result_frame, bg='white', text="{0:.2f}".format(total_cost), font=('Courier', 14), anchor='nw', justify='left')
     label_total_cost_result.place(relx=0.7, rely=0.8, relwidth=0.3, relheight=0.1)
 
+    """dataframe"""
+    pmt = -1 * npf.pmt(interest_monthly, months, amount)
+    ipmt = -1 * npf.ipmt(interest_monthly, 1, months, amount)
+    ppmt = -1 * npf.ppmt(interest_monthly, 1, months, amount)
+
+    rng = pd.date_range(start_date, periods=months, freq='MS')
+    rng.name = "Payment Date"
+    df = pd.DataFrame(index=rng, columns=['Payment', 'Principal Paid', 'Interest Paid', 'Ending Balance'],
+                      dtype='float')
+    df.reset_index(inplace=True)
+    df.index += 1
+    df.index.name = "Period"
+
+    df["Payment"] = -1 * npf.pmt(interest_monthly, months, amount)
+    df["Principal Paid"] = -1 * npf.ipmt(interest_monthly, 1, months, amount)
+    df["Interest Paid"] = -1 * npf.ppmt(interest_monthly, 1, months, amount)
+    df = df.round(2)
+
+    df["Ending Balance"] = 0
+    df.loc[1, "Ending Balance"] = amount - df.loc[1, "Principal Paid"]
+
+    for period in range(2, len(df) + 1):
+        previous_balance = df.loc[period - 1, "Ending Balance"]
+        principal_paid = df.loc[period, "Principal Paid"]
+
+        if previous_balance == 0:
+            df.loc[period, ['Payment', 'Principal Paid', 'Interest Paid', 'Ending Balance']] == 0
+            continue
+        elif principal_paid <= previous_balance:
+            df.loc[period, 'Ending Balance'] = previous_balance - principal_paid
+
+    pt = Table(table_frame, dataframe=df)
+    pt.show()
+
 
 button_calc = Button(calculator_frame, text="Calculate", bd=2, font=('Courier', 14), command=lambda: calculate_loan())
-button_calc.place(relx=0.5, rely=0.80, relwidth=0.4, relheight=0.1)
+button_calc.place(relx=0.55, rely=0.85, relwidth=0.4, relheight=0.1)
 
 root.mainloop()
 
