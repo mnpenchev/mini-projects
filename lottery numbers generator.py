@@ -1,24 +1,24 @@
 import random
 
-EuroMillionsNumbers = []
-luckyStar = []
 
-for i in range(0, 5):
-    number = random.randint(1, 50)
-    while number in EuroMillionsNumbers:
+def lottery():
+    EuroMillionsNumbers = []
+    for i in range(0, 5):
         number = random.randint(1, 50)
-    EuroMillionsNumbers.append(number)
+        while number in EuroMillionsNumbers:
+            number = random.randint(1, 50)
+        EuroMillionsNumbers.append(number)
+        EuroMillionsNumbers.sort()
 
-for it in range(0, 2):
-    number1 = random.randint(1, 13)
-    while number1 in luckyStar:
-        number1 = random.randint(1, 13)
-    luckyStar.append(number1)
+    luckyStar = []
+    for j in range(0, 2):
+        number1 = random.randint(1, 12)
+        while number1 in luckyStar:
+            number1 = random.randint(1, 12)
+        luckyStar.append(number1)
+        luckyStar.sort()
 
-EuroMillionsNumbers.sort()
-luckyStar.sort()
+    return EuroMillionsNumbers, luckyStar
 
-print("Today's EuroMillions numbers are: ")
-print(EuroMillionsNumbers)
-print("Lucky Stars numbers are: ")
-print(luckyStar)
+
+print(lottery())
