@@ -1,5 +1,7 @@
 import random
 
+guess = [[11, 22, 33, 44, 50], [1, 12]]
+
 
 def lottery():
     EuroMillionsNumbers = []
@@ -18,7 +20,15 @@ def lottery():
         luckyStar.append(number1)
         luckyStar.sort()
 
-    return EuroMillionsNumbers, luckyStar
+    result = [EuroMillionsNumbers, luckyStar]
+    return result
 
 
-print(lottery())
+count = 0
+while True:
+    if guess == lottery():
+        print("YOU HAVE WON THE LOTTERY !!! ", count, lottery())
+        break
+    else:
+        count += 1
+        print(count, lottery())
