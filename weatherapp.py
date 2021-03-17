@@ -1,4 +1,4 @@
-# https://www.youtube.com/watch?v=D8-snVfekto   https://openweathermap.org/current
+# https://openweathermap.org/current
 from tkinter import *
 import requests
 
